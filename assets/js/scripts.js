@@ -33,7 +33,7 @@ class Tarefa {
         this.dtLimite = null,
         this.dtInicio = null,
         this.dtEntrega = null,
-        this.Status = 1
+        this.concluida = false;
     }
     // Status 1:Aberta, 2:Concluida, 3:Cancelada, 5:Atrasada
 }
@@ -44,8 +44,13 @@ const saveTodo = (tarefa) => {
     const tasks = JSON.parse(localStorage.getItem("todolistmax")) || [];
     tasks.push(task);
     localStorage.setItem("todolistmax", JSON.stringify(tasks))
+    return task;
+}
 
-    carregarItemNaGrade(task)
+const removeTodo = (tarefaId) => {
+    const tasks = JSON.parse(localStorage.getItem("todolistmax")) || [];
+    const novatasks = tasks.filter(t => (t.id != tarefaId));
+    localStorage.setItem("todolistmax", JSON.stringify(novatasks))
 }
 
 const carregarItens = () => {
@@ -64,13 +69,13 @@ const carregarItemNaGrade = (tarefa) => {
 
     const todoTitle = document.createElement("h3")
     todoTitle.innerText = tarefa.titulo
-    todoTitle.classList.add('h3-task-titulo')
+    todoTitle.name  = 'h3-task-titulo'
     todo.appendChild(todoTitle)
 
     const todoId = document.createElement('input')
     todoId.type = 'hidden'
     todoId.value = tarefa.id
-    todoId.classList.add('hid-id')
+    todoId.name = 'hid-id'
     todo.appendChild(todoId)
 
     const doneBtn = document.createElement('button')
@@ -104,8 +109,10 @@ const toggleForms = () =>{
 todoForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const inputValue = todoInput.value;
-    if (inputValue)
-        saveTodo(inputValue);
+    if (inputValue){
+        const task = saveTodo(inputValue);
+        carregarItemNaGrade(task)
+    }
 });
 
 document.addEventListener("click", (e) => {
@@ -114,11 +121,14 @@ document.addEventListener("click", (e) => {
     let todoId;
     let todoTitle;
 
+    console.log(targetEl)
+    console.log(parentEl)
     if (parentEl && parentEl.querySelector('h3')){
-        todoId = parentEl.getElementsByClassName('hid-id').value;
-        todoTitle = parentEl.getElementsByClassName('h3-task-titulo').titulo;
-        console.log('entrou')
-        console.log(todoId)
+        todoTitle = parentEl.querySelector('h3')
+        console.log(todoTitle.innerText)
+        todoId = parentEl.querySelector('input')
+        console.log(todoId.value)
+
     }
 
     if (targetEl.classList.contains('finish-todo')) {
@@ -126,8 +136,8 @@ document.addEventListener("click", (e) => {
     }
 
     if (targetEl.classList.contains('remove-todo')){
-        alert(todoTitle)
-        //parentEl.remove();
+        removeTodo(todoId)
+        parentEl.remove();
     }
 
     if (targetEl.classList.contains('edit-todo')){
