@@ -58,6 +58,9 @@ const carregarItens = () => {
 const carregarItemNaGrade = (tarefa) => {     
     const todo = document.createElement("div")
     todo.classList.add("todo")
+    if (tarefa.concluida){
+        todo.classList.add("done")
+    }
 
     const todoTitle = document.createElement("h3")
     todoTitle.innerText = tarefa.titulo
