@@ -73,7 +73,7 @@ const carregarItemNaGrade = (tarefa) => {
     todo.appendChild(todoTitle)
 
     const todoId = document.createElement('input')
-    todoId.type = 'hidden'
+    todoId.type = 'text'
     todoId.value = tarefa.id
     todoId.name = 'hid-id'
     todo.appendChild(todoId)
