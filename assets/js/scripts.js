@@ -8,6 +8,7 @@ const editInput = document.getElementById("edit-input");
 const cancelEditBtn = document.getElementById("cancel-edit-btn");
 const toolbar = document.getElementById("areatoolbar");
 const searchInput = document.getElementById("search-input");
+const filtrarSelect = document.getElementById("filter-select");
 
 // Funções
 // filtro = pessoas.find((pes) => pes.login.contains(pessoa.login));
@@ -41,8 +42,24 @@ class Tarefa {
 }
 
 const obterTodoList =() => {
-    const tasks = JSON.parse(localStorage.getItem("todolistmax")) || [];
+    let tasks = JSON.parse(localStorage.getItem("todolistmax")) || [];
     return tasks;
+}
+
+const marcarTodo = (todoId) => {
+    const tasks = obterTodoList();
+    let objIndex = tasks.findIndex(obj => obj.id == todoId); // todoEditId));
+    tasks[objIndex].concluida = !tasks[objIndex].concluida
+    localStorage.setItem("todolistmax", JSON.stringify(tasks))
+
+    // //let tasks = obterTodoList();
+    // const tasks = JSON.parse(localStorage.getItem("todolistmax")) || [];
+    // console.log('obterTodo > ' + tasks)
+    // let task = tasks.filter(o => o.id == todoId);
+    
+    
+
+     return tasks[objIndex];
 }
 
 const saveTodoAdd = (tarefa) => {
@@ -53,13 +70,16 @@ const saveTodoAdd = (tarefa) => {
     return task;
 }
 
-const saveTodoEdit = (task) => {
-    
+const saveTodoEdit = (tarefa) => {
     const tasks = obterTodoList();
-    let objIndex = tasks.findIndex((obj => obj.id == todoEditId));
-    tasks[objIndex].titulo= task.titulo
-    tasks[objIndex].concluida= task.concluida
-    localStorage.setItem("todolistmax", JSON.stringify(tasks))
+    let objIndex = tasks.findIndex(obj => obj.id == tarefa.id); // todoEditId));
+
+    // console.log(tarefa.id);
+    // console.log(objIndex);
+
+   tasks[objIndex].titulo= tarefa.titulo
+   tasks[objIndex].concluida= tarefa.concluida
+   localStorage.setItem("todolistmax", JSON.stringify(tasks))
     return tasks[objIndex];
 
     // const tasks = obterTodoList();
@@ -87,20 +107,45 @@ const limparGrid = () => {
     }
 }
 
-const filtrarItens = (termo) => {
-    limparGrid();
-    const tasks = obterTodoList();
-    let filtro = tasks.filter(function (str) { return str.titulo.includes(termo); });
+// const filtrarItens = (termo) => {
+//     limparGrid();
+//     const tasks = obterTodoList();
+//     let filtro = tasks.filter(function (str) { return str.titulo.includes(termo); });
 
-    console.log(filtro.length)
-    filtro.forEach(task => {
-        carregarItemNaGrade(task)
-    });
-}
+
+//     console.log(filtro.length)
+//     filtro.forEach(task => {
+//         carregarItemNaGrade(task)
+//     });
+// }
 
 const carregarItens = () => {
     limparGrid();
-    const tasks = obterTodoList();
+    let tasks = obterTodoList();
+
+    // Filtrar por texto digitado
+    if (searchInput.value != ''){
+        tasks = tasks.filter(function (str) { return str.titulo.includes(searchInput.value); });
+    }
+
+    // Filtrar pelo select de completo
+    const filtro = filtrarSelect.options[filtrarSelect.selectedIndex];
+    console.log('filtro.value...: ' + filtro.value)
+    console.log('filtro.text....: ' + filtro.text)
+    switch (filtro.value){
+        case 'all':
+            console.log('todos')
+            break;
+        case 'done':
+            console.log('feitos')
+            tasks = tasks.filter(item => item.concluida)
+            break;
+        case 'todo':
+            console.log('A fazer');
+            tasks = tasks.filter(item => !item.concluida)
+            break;
+    }
+    console.log('filtrado.: ' + tasks.length);
     tasks.forEach(task => {
         carregarItemNaGrade(task)
     });
@@ -176,23 +221,18 @@ document.addEventListener("click", (e) => {
     let todoId;
     let todoTitle;
 
-    // console.log(targetEl)
-    // console.log(parentEl)
     if (parentEl && parentEl.querySelector('h3')){
         todoTitle = parentEl.querySelector('h3')
-        // console.log(todoTitle.innerText)
         todoId = parentEl.querySelector('input')
-        // console.log(todoId.value)
-
     }
 
     if (targetEl.classList.contains('finish-todo')) {
-        parentEl.classList.toggle('done');
+        marcarTodo(todoId.value);
+        carregarItens();
     }
 
     if (targetEl.classList.contains('remove-todo')){
         removeTodo(todoId.value)
-        //parentEl.remove();
         carregarItens();
     }
 
@@ -210,5 +250,6 @@ cancelEditBtn.addEventListener("submit", (e) => {
 
 toolbar.addEventListener("submit", (e) =>{
     e.preventDefault();
-    filtrarItens(searchInput.value)
+    carregarItens();
+    //filtrarItens(searchInput.value)
 })
