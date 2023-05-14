@@ -216,6 +216,7 @@ editForm.addEventListener("submit", (e) => {
 });
 
 document.addEventListener("click", (e) => {
+    e.preventDefault();
     const targetEl = e.target;
     const parentEl = targetEl.closest("div");
     let todoId;
