@@ -199,6 +199,7 @@ const toggleForms = () =>{
 // Eventos
 todoForm.addEventListener("submit", (e) => {
     e.preventDefault();
+    console.log('todo.submit')
     const inputValue = todoInput.value;
     if (inputValue){
         const task = saveTodoAdd(inputValue);
@@ -208,6 +209,7 @@ todoForm.addEventListener("submit", (e) => {
 
 editForm.addEventListener("submit", (e) => {
     e.preventDefault();
+    console.log('edit.submit')
     let task = new Tarefa(editInput.value)
     task.id = todoEditId;
     task = saveTodoEdit(task)
@@ -215,8 +217,9 @@ editForm.addEventListener("submit", (e) => {
     toggleForms()
 });
 
-document.addEventListener("click", (e) => {
+todoList.addEventListener("click", (e) => {
     e.preventDefault();
+    console.log('doc.click')
     const targetEl = e.target;
     const parentEl = targetEl.closest("div");
     let todoId;
@@ -246,11 +249,14 @@ document.addEventListener("click", (e) => {
 
 cancelEditBtn.addEventListener("submit", (e) => {
     e.preventDefault();
+    console.log('cancel.submit')
+
     toggleForms()
 });
 
 toolbar.addEventListener("submit", (e) =>{
     e.preventDefault();
+    console.log('toolbar.submit')
     carregarItens();
     //filtrarItens(searchInput.value)
 })
