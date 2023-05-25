@@ -160,3 +160,13 @@ input, select{
     text-decoration: line-through;
     font-style: italic;
 }
+
+.footer{
+    background-color: black;
+    text-align: center;
+    color: white;
+}
+
+.footer.p{
+    color: white;
+}
